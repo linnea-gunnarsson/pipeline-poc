@@ -1,0 +1,33 @@
+name: Docker CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+
+      - name: Build and start application
+        run: docker compose up --build --wait
+
+      - name: Verify todo workflow
+        run: |
+          curl --fail --show-error --location \
+            --data-urlencode 'title=CI todo' \
+            http://localhost:3000/todos | grep -F '<span>CI todo</span>'
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down --volumes --remove-orphans
