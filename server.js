@@ -78,7 +78,7 @@ app.post("/todos", async (request, response, next) => {
   }
 });
 
-// Deliberately vulnerable routes for local security tooling exercises.
+
 app.get("/lab/sql-search", async (request, response, next) => {
   const query = request.query.q || "";
 
